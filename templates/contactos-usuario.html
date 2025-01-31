@@ -10,12 +10,16 @@
     <div>
         <a href="/logout">Cerrar Sesión</a>
         <div>
-            <h1>Bienvenido a tus contactos, {{usuario.nombre}}</h1>
+            {% if usuario %}
+                <h1>Bienvenido a tus contactos, {{usuario.nombre}}</h1>
+            {% endif %}
             {% for contacto in contactos %}
                 <div>
                     <h1>{{ contacto.nombre }}</h1>
                     <h1>{{ contacto.correo }}</h1>
                     <h1>{{ contacto.telefono }}</h1>
+                    <a href="/delete/{{contacto.id_contacto}}">Borrar</a>
+                    <a href="/edit/{{contacto.id_contacto}}">Editar</a>
                 </div>
             {% endfor %}
         </div>

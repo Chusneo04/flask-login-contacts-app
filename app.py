@@ -110,7 +110,7 @@ def contacts():
     lista_contactos = []
 
     for contacto in contactos:
-        lista_contactos.append({'nombre': contacto[1], 'correo': contacto[2], 'telefono':contacto[3]})
+        lista_contactos.append({'id_contacto':contacto[0] ,'nombre': contacto[1], 'correo': contacto[2], 'telefono':contacto[3]})
 
 
     return render_template('contactos-usuario.html', usuario = current_user, contactos = lista_contactos)
@@ -131,8 +131,29 @@ def añadir_contacto():
     return render_template('añadir-contacto.html')
     
 
+@app.route('/delete/<int:id>')
+@login_required
+def eliminar_contacto(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute('DELETE FROM contactos WHERE id_contacto = %s',(id,))
+    mysql.connection.commit()
+    return redirect(url_for('contacts'))
 
-
+@app.route('/edit/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def editar_contacto(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM contactos WHERE id_contacto = %s',(id,))
+    contact = cursor.fetchone()
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        correo = request.form['correo']
+        telefono = request.form['telefono']
+        id_usuario = current_user.id
+        cursor.execute('UPDATE contactos SET correo = %s, nombre = %s, telefono = %s WHERE id_contacto = %s',(correo, nombre, telefono, id))
+        mysql.connection.commit()
+        return redirect(url_for('contacts'))
+    return render_template('editar-contacto.html', contacto = {'id':contact[0], 'nombre':contact[1], 'correo':contact[2], 'telefono':contact[3]})
 
 if __name__ == '__main__':
     app.run(debug = True)
