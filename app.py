@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, json
 from dotenv import load_dotenv
 from flask_mysqldb import MySQL
 from os import getenv
@@ -32,7 +32,7 @@ def load_user(user_id):
     cursor.close()
     
     if user:
-        return User(user[0], user[1], user[2])  # Devuelve una instancia de User
+        return User(user[0], user[1], user[2])  
     return None
 
 
@@ -92,9 +92,47 @@ def login():
             flash('Debes rellenar todos los campos')
     return render_template('login.html')
 
-@app.route('/contacts')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('raiz'))
+
+
+@app.route('/contacts', methods = ['GET', 'POST'])
+@login_required
 def contacts():
-    return render_template('contactos-usuario.html')
+    id = current_user.id
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM contactos WHERE id_usuario = %s', (id,))
+    contactos = cursor.fetchall()
+    print(contactos)
+    lista_contactos = []
+
+    for contacto in contactos:
+        lista_contactos.append({'nombre': contacto[1], 'correo': contacto[2], 'telefono':contacto[3]})
+
+
+    return render_template('contactos-usuario.html', usuario = current_user, contactos = lista_contactos)
+
+@app.route('/añadir-contacto', methods=['GET', 'POST'])
+@login_required
+def añadir_contacto():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        correo = request.form['correo']
+        telefono = request.form['telefono']
+        id_usuario = current_user.id
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO contactos (nombre, correo, telefono, id_usuario) VALUES (%s, %s, %s, %s)', (nombre, correo, telefono, id_usuario))
+        mysql.connection.commit()
+        flash('Contacto añadido correctamente')
+    return render_template('añadir-contacto.html')
+    
+
+
+
 
 if __name__ == '__main__':
     app.run(debug = True)

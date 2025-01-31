@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    <div class="w-full h-[100vh] bg-[#123456] flex flex-col gap-[20px] p-[10px] ">
+        <div class="w-[75%] flex justify-between items-center">
+            <a href="/contacts" class="text-[white] text-[30px]">Mi Perfil</a>
+            
+        </div>
+        
+        {% for category, message in messages %}
+            <h1 class="{{ category }} text-[white] text-[20px]">{{ message }}</>
+        {% endfor %}
+        <div class="flex flex-col items-center justify-center gap-[50px]">
+            <h1 class="text-[white] text-[50px]">Formulario para añadir contacto</h1>
+            <form method="post" class="flex flex-col gap-[20px] items-center">
+                <input type="text" name="nombre" placeholder="Nombre" class="w-[350px] h-[50px] bg-[white] border-[1px] p-[10px] rounded-[10px]">
+                <input type="email" name="correo" placeholder="Correo Electronico" class="w-[350px] h-[50px] bg-[white] border-[1px] p-[10px] rounded-[10px]">
+                <input type="tel" name="telefono" placeholder="Telefono" class="w-[350px] h-[50px] bg-[white] border-[1px] p-[10px] rounded-[10px]">
+                <button href="/añadir-contacto" class="w-[175px] h-[50px] border-[1px] bg-[#4bcd88] rounded-[10px] text-[20px]">Añadir Contacto</button>
+            </form>
+        </div>
+    </div>
+    {% endwith %}
+</body>
+</html>

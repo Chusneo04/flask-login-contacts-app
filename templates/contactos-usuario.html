@@ -7,6 +7,20 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 <body>
-    <h1>Ruta de los contactos de cada usuario</h1>
+    <div>
+        <a href="/logout">Cerrar Sesión</a>
+        <div>
+            <h1>Bienvenido a tus contactos, {{usuario.nombre}}</h1>
+            {% for contacto in contactos %}
+                <div>
+                    <h1>{{ contacto.nombre }}</h1>
+                    <h1>{{ contacto.correo }}</h1>
+                    <h1>{{ contacto.telefono }}</h1>
+                </div>
+            {% endfor %}
+        </div>
+        <a href="/añadir-contacto">Añadir Contacto</a>
+    </div>
+    
 </body>
 </html>
