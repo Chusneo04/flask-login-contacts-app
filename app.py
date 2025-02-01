@@ -39,6 +39,8 @@ def load_user(user_id):
 
 @app.route('/', methods = ['GET'])
 def raiz():
+    if current_user.is_authenticated:
+        return redirect(url_for('contacts'))
     return render_template('index.html')
 
 
@@ -49,6 +51,7 @@ def register():
     cursor.execute('select * from usuarios')
     usuarios = cursor.fetchall()
     correos = []
+    
     if request.method == 'POST':
         nombre = request.form['nombre']
         correo = request.form['correo']
@@ -69,6 +72,7 @@ def register():
                 flash('Usuario añadido correctamente', 'success')
         else:
             flash('Debes rellenar todos los campos')
+    
     return render_template('register.html')
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -90,6 +94,8 @@ def login():
                 flash('El usuario no existe')
         else:
             flash('Debes rellenar todos los campos')
+    if current_user.is_authenticated:
+        return redirect(url_for('contacts'))
     return render_template('login.html')
 
 @app.route('/logout')
@@ -155,5 +161,13 @@ def editar_contacto(id):
         return redirect(url_for('contacts'))
     return render_template('editar-contacto.html', contacto = {'id':contact[0], 'nombre':contact[1], 'correo':contact[2], 'telefono':contact[3]})
 
+def status_401(error):
+    return render_template('error_401.html')
+
+def status_404(error):
+    return render_template('error_404.html')
+
 if __name__ == '__main__':
+    app.register_error_handler(401, status_401)
+    app.register_error_handler(404, status_404)
     app.run(debug = True)
